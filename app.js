@@ -1,13 +1,31 @@
 const express = require("express");
 const morgan = require("morgan");
+const bodyParser = require("body-parser");
 
 const rotaProdutos = require("./routes/produtos");
 const rotaPedidos = require("./routes/pedidos");
 
 const app = express(); // Intancia
 
-// Retorna logs durante o momento de desenvolvimento.
-app.use(morgan("dev"));
+app.use(morgan("dev")); // Retorna logs durante o momento de desenvolvimento.
+app.use(bodyParser.urlencoded({ extended: false })); // Apenas dados simples.
+app.use(bodyParser.json()); // Aceita entrada no body em json.
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+
+  if (req.method === "OPTIONS") {
+    res.header("Access-Control-Allow-Methods", "GET, POST, PATCH, PUT, DELETE");
+
+    return res.status(200).send({});
+  }
+
+  next();
+});
 
 app.use("/produtos", rotaProdutos);
 app.use("/pedidos", rotaPedidos);
