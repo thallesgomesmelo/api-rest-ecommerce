@@ -1,9 +1,10 @@
 const express = require("express");
+const rotaProdutos = require("./routes/produtos");
+const rotaPedidos = require("./routes/pedidos");
 
 const app = express(); // Intancia
 
-app.use((req, res, next) => {
-  res.status(200).send({ message: "OK, Sucesso" });
-});
+app.use("/produtos", rotaProdutos);
+app.use("/pedidos", rotaPedidos);
 
 module.exports = app;
