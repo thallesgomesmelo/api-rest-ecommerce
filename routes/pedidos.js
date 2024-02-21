@@ -10,30 +10,43 @@ router.get("/", (req, res, next) => {
       return res.status(500).send({ erro: error });
     }
 
-    conn.query("SELECT * FROM pedidos", (err, result, field) => {
-      if (err) {
-        return res.status(500).send({ erro: error });
+    conn.query(
+      `SELECT pedidos.id_pedido, 
+              pedidos.quantidade, 
+              produtos.id_produtos, 
+              produtos.nome, 
+              produtos.preco 
+         FROM pedidos 
+   INNER JOIN produtos 
+           ON produtos.id_produtos = pedidos.id_produtos;`,
+      (err, result, field) => {
+        if (err) {
+          return res.status(500).send({ erro: error });
+        }
+
+        // Fazendo que fique mais rastreavel o valor da requisição.
+        const response = {
+          pedidos: result.map(ped => {
+            return {
+              id_pedido: ped.id_pedido,
+              quantidade: ped.quantidade,
+              produto: {
+                id_produto: ped.id_produtos,
+                nome: ped.nome,
+                preco: ped.preco
+              },
+              request: {
+                tipo: "GET",
+                descricao: "Retorna os detalhes de um pedido em específico.",
+                url: `http://localhost:3000/pedidos/${ped.id_pedido}`
+              }
+            };
+          })
+        };
+
+        return res.status(200).send(response);
       }
-
-      // Fazendo que fique mais rastreavel o valor da requisição.
-      const response = {
-        quantidade: result.length,
-        pedidos: result.map(ped => {
-          return {
-            id_pedido: ped.id_pedido,
-            id_produto: ped.produtos_id_produtos,
-            quantidade: ped.quantidade,
-            request: {
-              tipo: "GET",
-              descricao: "Retorna os detalhes de um pedido em específico.",
-              url: `http://localhost:3000/pedidos/${ped.id_pedido}`
-            }
-          };
-        })
-      };
-
-      return res.status(200).send(response);
-    });
+    );
   });
 });
 
