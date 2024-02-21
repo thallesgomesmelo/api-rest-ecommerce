@@ -31,6 +31,7 @@ const upload = multer({
 });
 
 const mysql = require("../mysql").poll;
+const login = require("../middleware/login");
 
 // Retorna todos os produtos.
 router.get("/", (req, res, next) => {
@@ -107,46 +108,51 @@ router.get("/:id_produto", (req, res, next) => {
 });
 
 // Adiciona um produto.
-router.post("/", upload.single("produto_imagem"), (req, res, next) => {
-  console.log(req.file);
-  mysql.getConnection((error, conn) => {
-    if (error) {
-      return res.status(500).send({ erro: error });
-    }
-
-    conn.query(
-      "INSERT INTO produtos (nome, preco,imagem_produto) VALUES (?,?,?)",
-      [req.body.nome, req.body.preco, req.file.path],
-      (err, result, field) => {
-        conn.release();
-
-        if (err) {
-          return res.status(500).send({ erro: err, response: null });
-        }
-
-        const response = {
-          message: "Produto inserido com sucesso.",
-          produtoCriado: {
-            id_produto: result.id_produtos,
-            nome: req.body.nome,
-            preco: req.body.preco,
-            imagem_produto: req.file.path,
-            request: {
-              tipo: "GET",
-              descricao: "Retorna todos produtos",
-              url: `http://localhost:3000/produtos`
-            }
-          }
-        };
-
-        return res.status(201).send(response);
+router.post(
+  "/",
+  login.obrigatorio,
+  upload.single("produto_imagem"),
+  (req, res, next) => {
+    console.log(req.file);
+    mysql.getConnection((error, conn) => {
+      if (error) {
+        return res.status(500).send({ erro: error });
       }
-    );
-  });
-});
+
+      conn.query(
+        "INSERT INTO produtos (nome, preco,imagem_produto) VALUES (?,?,?)",
+        [req.body.nome, req.body.preco, req.file.path],
+        (err, result, field) => {
+          conn.release();
+
+          if (err) {
+            return res.status(500).send({ erro: err, response: null });
+          }
+
+          const response = {
+            message: "Produto inserido com sucesso.",
+            produtoCriado: {
+              id_produto: result.id_produtos,
+              nome: req.body.nome,
+              preco: req.body.preco,
+              imagem_produto: req.file.path,
+              request: {
+                tipo: "GET",
+                descricao: "Retorna todos produtos",
+                url: `http://localhost:3000/produtos`
+              }
+            }
+          };
+
+          return res.status(201).send(response);
+        }
+      );
+    });
+  }
+);
 
 // Atualiza um produto expecifico.
-router.patch("/", (req, res, next) => {
+router.patch("/", login.obrigatorio, (req, res, next) => {
   mysql.getConnection((error, conn) => {
     if (error) {
       return res.status(500).send({ erro: error });
@@ -187,7 +193,7 @@ router.patch("/", (req, res, next) => {
 });
 
 // Apaga um produto expecifico.
-router.delete("/", (req, res, next) => {
+router.delete("/", login.obrigatorio, (req, res, next) => {
   mysql.getConnection((error, conn) => {
     if (error) {
       return res.status(500).send({ erro: error });
