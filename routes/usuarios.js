@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 const mysql = require("../mysql").poll;
 
@@ -49,6 +50,49 @@ router.post("/cadastro", (req, res, next) => {
             );
           });
         }
+      }
+    );
+  });
+});
+
+router.post("/login", (req, res, next) => {
+  mysql.getConnection((err, conn) => {
+    if (err) {
+      return res.status(500).send({ erro: err });
+    }
+
+    conn.query(
+      "SELECT * FROM usuarios WHERE email = ?",
+      [req.body.email],
+      (err, results, fields) => {
+        conn.release();
+
+        if (err) {
+          return res.status(500).send({ erro: err });
+        }
+
+        if (results.length < 1) {
+          return res.status(401).send({ message: "Falha na autenticação." });
+        }
+
+        bcrypt.compare(req.body.senha, results[0].senha, (erro, result) => {
+          if (erro) {
+            return res.status(401).send({ message: "Falha na autenticação." });
+          }
+
+          if (result) {
+            const token = jwt.sign(
+              { id_usuario: results[0].id_usuario, email: results[0].email },
+              process.env.JWT_KEY,
+              { expiresIn: "1h" }
+            );
+            return res
+              .status(200)
+              .send({ message: "Autenticado com sucesso", token });
+          }
+
+          return res.status(401).send({ message: "Falha na autenticação." });
+        });
       }
     );
   });
