@@ -8,6 +8,7 @@ const rotaPedidos = require("./routes/pedidos");
 const app = express(); // Intancia
 
 app.use(morgan("dev")); // Retorna logs durante o momento de desenvolvimento.
+app.use("/uploads", express.static("uploads")); // Fazendo com que pasta upload fica desponivel publicamente.
 app.use(bodyParser.urlencoded({ extended: false })); // Apenas dados simples.
 app.use(bodyParser.json()); // Aceita entrada no body em json.
 
