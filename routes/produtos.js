@@ -44,4 +44,13 @@ router.post(
 router.patch("/", login.obrigatorio, ProdutosController.pathProduto);
 router.delete("/", login.obrigatorio, ProdutosController.deleteProduto);
 
+// Rotas imagem
+router.post(
+  "/:id_produto/imagem",
+  login.obrigatorio,
+  upload.single("produto_imagem"),
+  ProdutosController.postImagem
+);
+router.get("/:id_produto/imagem", ProdutosController.getImagens);
+
 module.exports = router;

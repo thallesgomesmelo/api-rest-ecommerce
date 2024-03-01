@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const rotaProdutos = require("./routes/produtos");
 const rotaPedidos = require("./routes/pedidos");
 const rotaUsuarios = require("./routes/usuarios");
+const rotaImagens = require("./routes/imagens");
 
 const app = express(); // Intancia
 
@@ -32,6 +33,7 @@ app.use((req, res, next) => {
 app.use("/produtos", rotaProdutos);
 app.use("/pedidos", rotaPedidos);
 app.use("/usuarios", rotaUsuarios);
+app.use("/imagens", rotaImagens);
 
 /**
  * Quando passar por todas as rotas acima e
