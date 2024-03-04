@@ -6,6 +6,7 @@ const routeProducts = require("./routes/productsRoute");
 const routeOrders = require("./routes/ordersRoute");
 const routeUsers = require("./routes/usersRoute");
 const routeImages = require("./routes/imagesRoute");
+const routeCategories = require("./routes/categoriesRoute");
 
 const app = express(); // Instancia
 
@@ -34,6 +35,7 @@ app.use("/products", routeProducts);
 app.use("/orders", routeOrders);
 app.use("/users", routeUsers);
 app.use("/images", routeImages);
+app.use("/categories", routeCategories);
 
 /**
  * Quando passar por todas as rotas acima e
