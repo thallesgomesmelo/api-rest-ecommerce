@@ -28,6 +28,29 @@ exports.createUser = async (req, res, next) => {
   }
 };
 
+exports.createUsers = async (req, res, next) => {
+  try {
+    const users = req.body.users.map(user => [
+      user.email,
+      bcrypt.hashSync(req.body.password, 10)
+    ]);
+
+    const query = `INSERT INTO users (email, password) VALUES ?;`;
+    await mysql.execute(query, [users]);
+
+    const response = {
+      message: "Usuários criado com sucesso.",
+      createUsers: req.body.users.map(user => {
+        return { email: user.email };
+      })
+    };
+
+    return res.status(201).send(response);
+  } catch (error) {
+    return res.status(500).send({ erro: error });
+  }
+};
+
 exports.Login = async (req, res, next) => {
   try {
     const query = "SELECT * FROM users WHERE email = ?;";
