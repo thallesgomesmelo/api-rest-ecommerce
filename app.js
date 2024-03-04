@@ -2,12 +2,12 @@ const express = require("express");
 const morgan = require("morgan");
 const bodyParser = require("body-parser");
 
-const rotaProdutos = require("./routes/produtos");
-const rotaPedidos = require("./routes/pedidos");
-const rotaUsuarios = require("./routes/usuarios");
-const rotaImagens = require("./routes/imagens");
+const routeProducts = require("./routes/productsRoute");
+const routeOrders = require("./routes/ordersRoute");
+const routeUsers = require("./routes/usersRoute");
+const routeImages = require("./routes/imagesRoute");
 
-const app = express(); // Intancia
+const app = express(); // Instancia
 
 app.use(morgan("dev")); // Retorna logs durante o momento de desenvolvimento.
 app.use("/uploads", express.static("uploads")); // Fazendo com que pasta upload fica desponivel publicamente.
@@ -30,10 +30,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/produtos", rotaProdutos);
-app.use("/pedidos", rotaPedidos);
-app.use("/usuarios", rotaUsuarios);
-app.use("/imagens", rotaImagens);
+app.use("/products", routeProducts);
+app.use("/orders", routeOrders);
+app.use("/users", routeUsers);
+app.use("/images", routeImages);
 
 /**
  * Quando passar por todas as rotas acima e

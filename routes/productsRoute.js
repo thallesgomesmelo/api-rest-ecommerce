@@ -31,26 +31,26 @@ const upload = multer({
 });
 
 const login = require("../middleware/login");
-const ProdutosController = require("../controllers/produtosController");
+const ProductsController = require("../controllers/productsController");
 
-router.get("/", ProdutosController.getProdutos);
-router.get("/:id_produto", ProdutosController.getUmProduto);
+router.get("/", ProductsController.getProducts);
+router.get("/:productId", ProductsController.getOneProduct);
 router.post(
   "/",
-  login.obrigatorio,
-  upload.single("produto_imagem"),
-  ProdutosController.postProduto
+  login.required,
+  upload.single("imageProduct"),
+  ProductsController.postProduct
 );
-router.patch("/", login.obrigatorio, ProdutosController.pathProduto);
-router.delete("/", login.obrigatorio, ProdutosController.deleteProduto);
+router.patch("/", login.required, ProductsController.updateProduct);
+router.delete("/", login.required, ProductsController.deleteProduct);
 
 // Rotas imagem
 router.post(
-  "/:id_produto/imagem",
-  login.obrigatorio,
-  upload.single("produto_imagem"),
-  ProdutosController.postImagem
+  "/:productId/image",
+  login.required,
+  upload.single("imageProduct"),
+  ProductsController.postImage
 );
-router.get("/:id_produto/imagem", ProdutosController.getImagens);
+router.get("/:productId/images", ProductsController.getImages);
 
 module.exports = router;

@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 const mysql = require("../mysql");
 
-exports.cadastroUsuario = async (req, res, next) => {
+exports.createUser = async (req, res, next) => {
   try {
     let query = "SELECT * FROM users WHERE email = ?;";
     let result = await mysql.execute(query, [req.body.email]);
