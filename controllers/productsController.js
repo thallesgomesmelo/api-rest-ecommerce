@@ -2,7 +2,18 @@ const mysql = require("../mysql");
 
 exports.getProducts = async (req, res, next) => {
   try {
-    const result = await mysql.execute("SELECT * FROM products;");
+    let name = "";
+
+    if (req.query.name) {
+      name = req.query.name;
+    }
+
+    const query = `
+        SELECT * 
+          FROM products 
+         WHERE categoryId = ?
+           AND (nome LIKE '%${name}%');`;
+    const result = await mysql.execute(query, [req.query.categoryId]);
 
     const response = {
       length: result.length,
@@ -60,8 +71,14 @@ exports.getOneProduct = async (req, res, next) => {
 
 exports.postProduct = async (req, res, next) => {
   try {
-    const query = "INSERT INTO products (nome, price, productImage) VALUES (?,?,?)";
-    const params = [req.body.nome, req.body.price, req.file.path];
+    const query =
+      "INSERT INTO products (nome, price, productImage, categoryId) VALUES (?,?,?,?)";
+    const params = [
+      req.body.nome,
+      req.body.price,
+      req.file.path,
+      req.body.categoryId
+    ];
 
     const result = await mysql.execute(query, params);
 
@@ -70,6 +87,7 @@ exports.postProduct = async (req, res, next) => {
       productCreate: {
         productId: result.productId,
         nome: req.body.nome,
+        categoryId: req.body.categoryId,
         price: req.body.price,
         productImage: req.file.path,
         request: {
