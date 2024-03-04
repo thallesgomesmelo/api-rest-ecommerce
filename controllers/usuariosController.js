@@ -28,11 +28,11 @@ exports.cadastroUsuario = async (req, res, next) => {
   }
 };
 
-exports.Login = (req, res, next) => {
+exports.Login = async (req, res, next) => {
   try {
     const query = "SELECT * FROM users WHERE email = ?;";
 
-    let results = mysql.execute(query, [req.body.email]);
+    const results = await mysql.execute(query, [req.body.email]);
 
     if (results.length < 1) {
       return res.status(401).send({ message: "Falha na autenticação." });
@@ -40,7 +40,7 @@ exports.Login = (req, res, next) => {
 
     if (bcrypt.compareSync(req.body.senha, results[0].password)) {
       const token = jwt.sign(
-        { id_usuario: results[0].id_usuario, email: results[0].email },
+        { id_usuario: results[0].userId, email: results[0].email },
         process.env.JWT_KEY,
         { expiresIn: "1h" }
       );
