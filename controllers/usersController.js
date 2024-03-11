@@ -62,13 +62,17 @@ exports.Login = async (req, res, next) => {
     }
 
     if (bcrypt.compareSync(req.body.senha, results[0].password)) {
-      const token = jwt.sign(
-        { id_usuario: results[0].userId, email: results[0].email },
-        process.env.JWT_KEY,
-        { expiresIn: "1h" }
-      );
+      const token = jwt.sign({ email: results[0].email }, process.env.JWT_KEY, {
+        expiresIn: "1h"
+      });
 
-      return res.status(200).send({ message: "Autenticado com sucesso", token });
+      res.cookie("ecommerc_token", token, {
+        maxAge: 60 * 60 * 1000, // 60 minutes em milesegundos.
+        httpOnly: true
+        // secure: true - Indica que o cookie só deve ser enviado em conexões HTTPS
+      });
+
+      return res.status(200).send({ message: "Autenticado com sucesso" });
     }
 
     return res.status(401).send({ message: "Falha na autenticação." });
